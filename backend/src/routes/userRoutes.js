@@ -4,7 +4,7 @@ import {
   signIn,
   signUp,
 } from "../middlewares/authMiddleware.js";
-import { User } from "../database/db.js";
+import { User, Wallet } from "../database/db.js";
 import responseHandler from "../utils/responseHandler.js";
 import { hashPassword } from "../utils/passwordHasher.js";
 import { updateUserBodyChecker } from "../validation/zodSchema.js";
@@ -21,6 +21,9 @@ router.post("/signup", signUp, async (req, res) => {
     password: hashedPassword,
   });
   const userData = await user.save();
+
+  // this will add a 0 balance to the wallet of the registered user
+  await Wallet.create({ user: userData._id });
   return responseHandler(
     res,
     201,
@@ -40,8 +43,8 @@ router.post("/signin", signIn, async (req, res) => {
   );
 });
 
-router.get("/", authenticationMiddleware, async (req, res) => {
-  const data = await User.findById(req.user.id).select(
+router.get("/profile", authenticationMiddleware, async (req, res) => {
+  const data = await User.findById(req.user._id).select(
     "_id username firstName lastName createdAt updatedAt",
   );
   return responseHandler(res, 200, "SUCCESS", data, null);
@@ -64,8 +67,17 @@ router.put("/", authenticationMiddleware, async (req, res) => {
 });
 
 // get all users for sending money
-router.get("/bulk", authenticationMiddleware, (req, res) => {
-  res.json({});
+router.get("/bulk", authenticationMiddleware, async (req, res) => {
+  const filter = req.query.filter || "";
+  const filterExpression = new RegExp(filter);
+  const data = await User.find({
+    $or: [
+      { firstName: { $regex: filterExpression, $options: "i" } },
+      { lastName: { $regex: filterExpression, $options: "i" } },
+    ],
+  }).select("_id firstName lastName username createdAt");
+  const users = data.filter((user) => user._id != req.user._id);
+  return responseHandler(res, 200, "SUCCESS", [...users], null);
 });
 
 export default router;

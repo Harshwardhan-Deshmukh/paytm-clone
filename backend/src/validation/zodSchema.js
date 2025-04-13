@@ -17,3 +17,8 @@ export const updateUserBodyChecker = zod.object({
   lastName: zod.string().optional(),
   password: zod.string().min(6).optional(),
 });
+
+export const transferMoneyCheck = zod.object({
+  to: zod.string(),
+  amount: zod.number(),
+});

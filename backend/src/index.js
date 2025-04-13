@@ -4,6 +4,8 @@ import morgan from "morgan";
 import { PORT } from "./config/configs.js";
 import userRouter from "./routes/userRoutes.js";
 import responseHandler from "./utils/responseHandler.js";
+import walletRouter from "./routes/walletRoutes.js";
+import transactionRouter from "./routes/transactionRoutes.js";
 
 const app = express();
 const port = PORT;
@@ -15,6 +17,8 @@ app.use(cors({}));
 
 // routes
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/wallet", walletRouter);
+app.use("/api/v1/transfer", transactionRouter);
 
 // default response
 app.use((req, res) => {

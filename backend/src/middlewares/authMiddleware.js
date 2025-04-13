@@ -39,7 +39,7 @@ export const signIn = async (req, res, next) => {
     if (userData._id && isValidPassword) {
       const token = jwt.sign(
         {
-          id: userData._id,
+          _id: userData._id,
           username: userData.username,
         },
         JWT_SECRET,
