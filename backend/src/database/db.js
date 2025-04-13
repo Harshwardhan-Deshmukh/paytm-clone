@@ -1,12 +1,13 @@
-import { connect, Schema, Model } from "mongoose";
+import mongoose from "mongoose";
 import { MONGODB_CONNECTION_STRING } from "../config/configs.js";
 
-connect(MONGODB_CONNECTION_STRING)
+mongoose
+  .connect(MONGODB_CONNECTION_STRING)
   .then(() => console.log("Mongodb connection successful"))
   .catch((err) => console.log(`Mongodb connection failed : ${err.message}`));
 
 // schemas
-const UserSchema = new Schema(
+const UserSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -16,22 +17,22 @@ const UserSchema = new Schema(
   { timestamps: true },
 );
 
-const WalletSchema = new Schema({
+const WalletSchema = new mongoose.Schema({
   user: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
   balance: { type: Number, default: 0 },
 });
 
-const TransactionSchema = new Schema({
+const TransactionSchema = new mongoose.Schema({
   sender: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
   receiver: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
   },
@@ -40,6 +41,6 @@ const TransactionSchema = new Schema({
 });
 
 // models
-export const User = Model("User", UserSchema);
-export const Wallet = Model("Wallet", WalletSchema);
-export const Transaction = Model("Transaction", TransactionSchema);
+export const User = mongoose.model("User", UserSchema);
+export const Wallet = mongoose.model("Wallet", WalletSchema);
+export const Transaction = mongoose.model("Transaction", TransactionSchema);

@@ -4,7 +4,9 @@ const responseHandler = (response, statusCode, status, data, error) => {
   return response.status(statusCode).json({
     status,
     data,
-    error,
+    error: !error || {
+      message: error,
+    },
     timestamp: TIMESTAMP,
   });
 };

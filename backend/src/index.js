@@ -11,11 +11,7 @@ const port = PORT;
 // middlewares
 app.use(express.json());
 app.use(morgan("dev"));
-app.use(
-  cors({
-    origin: "*",
-  }),
-);
+app.use(cors({}));
 
 // routes
 app.use("/api/v1/user", userRouter);
@@ -32,6 +28,15 @@ app.use((req, res) => {
 });
 
 // global catch
+app.use((err, _req, res, _next) => {
+  return responseHandler(
+    res,
+    err.statusCode || 500,
+    "ERROR",
+    null,
+    err.message,
+  );
+});
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
